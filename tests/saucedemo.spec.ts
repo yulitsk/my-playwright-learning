@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { Page } from '@playwright/test';
-import { validUser } from './test-data';
+import { validUser,lockedUser } from './test-data';
 
 test.describe("SauceDemo", () => {
   test.beforeEach(async ({ page }) => {
@@ -130,5 +130,14 @@ test('Sorting by Price: low to high', async ({ page }) => {
     page.locator("[data-test='inventory-list']").locator(".inventory_item_name").first(),
   "First product should be Sauce Labs Onesie after sorting by Price: low to high").toHaveText("Sauce Labs Onesie");
   });
+
+test('Locked user login - login with locked credentials', async ({ page }) => {   
+  await page.getByPlaceholder("Username").fill(lockedUser.username);
+  await page.getByPlaceholder("Password").fill(lockedUser.password);
+  await page.getByRole('button', { name: 'Login' }).click();
+  await expect(page.locator("[data-test='error']"),"Error message shows up when locked user attempts to login.").toHaveText( 
+    "Epic sadface: Sorry, this user has been locked out."
+  );
+});
 
 });
